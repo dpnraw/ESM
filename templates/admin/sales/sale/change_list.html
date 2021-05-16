@@ -1,0 +1,44 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+{% block extrahead %}
+{{block.super}}
+{% endblock %}
+
+{% block content %}
+
+<table class="table table-hover text-center">
+    <thead>
+        <tr>
+            <th scope="col">Total Price</th>
+            <th scope="col">Cash Balance</th>
+            <th scope="col">Due Balance</th>
+            <th scope="col">Cheque Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td id="total_price" class="fw-bolder"></td>
+            <td id="amount_received" class="fw-bolder"></td>
+            <td id="due_balance" class="fw-bolder"></td>
+            <td id="cheque_balance" class="fw-bolder"></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+    window.onload = async () => {
+        amount_received = document.querySelector('#amount_received');
+        total_price = document.querySelector('#total_price');
+        due_balance = document.querySelector('#due_balance');
+        cheque_balance = document.querySelector('#cheque_balance');
+
+        amount_received.innerHTML = {{amount_received}};
+        total_price.innerHTML = {{total_price}};
+        due_balance.innerHTML = {{due_balance}};
+        cheque_balance.innerHTML = {{cheque_balance}};
+    }
+
+</script>
+
+{{ block.super }}
+{% endblock %}

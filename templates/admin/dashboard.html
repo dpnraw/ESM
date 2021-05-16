@@ -1,0 +1,205 @@
+{% load static %}
+
+<style>
+    .padding-bigger {
+        padding-left: 80px;
+        padding-right: 40px;
+        padding-top: 40px;
+        padding-bottom: 40px;
+
+    }
+
+    .round-border {
+        border-radius: 10px;
+    }
+
+    .vertical-center {
+        margin: 0;
+        position: relative;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        right: 80%;
+    }
+
+    a {
+        text-decoration: none !important;
+    }
+
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<div class="container">
+    <div class="text-center">
+        <a href="/sales/sale/add/" class="btn btn-primary text-light">Add Sale</a>
+    </div>
+    <div class="row text-center">
+        <div class="col-md-12 col-lg-6 col-xl-6 pt-4 px-4">
+            <a class="p-3 card" href="/sales/sale/">
+                <div class="padding-bigger">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <p class="h1 text-secondary vertical-center">
+                                <i class="fas fa-dollar-sign"></i>
+                            </p>
+                        </div>
+                        <div class="">
+                            <div class="text-secondary display-6 font-weight-bold" id="total_users_count">
+                                Sales
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-12 col-lg-6 col-xl-6 pt-4 px-4">
+            <a class="p-3 card" href="/customer/customer/">
+                <div class="padding-bigger">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <p class="h1 text-secondary vertical-center">
+                                <i class="fas fa-users-cog"></i>
+                            </p>
+                        </div>
+                        <div class="">
+                            <div class="text-secondary display-6 font-weight-bold" id="total_users_count">
+                                Customers
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+
+    {% if request.user.is_superuser %}
+    <div class="row text-center">
+        <div class="col-md-12 col-lg-6 col-xl-6 pt-4 px-4">
+            <a class="p-3 card" href="/auth/user/">
+                <div class="padding-bigger">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <p class="h1 text-secondary vertical-center">
+                                <i class="fas fa-user-tie"></i>
+                            </p>
+                        </div>
+                        <div class="">
+                            <div class="text-secondary display-6 font-weight-bold" id="total_users_count">
+                                Salesman
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-12 col-lg-6 col-xl-6 pt-4 px-4">
+            <a class="p-3 card" href="/sales/eggtype/">
+                <div class="padding-bigger">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <p class="h1 text-secondary vertical-center">
+                                <i class="fas fa-egg"></i>
+                            </p>
+                        </div>
+                        <div class="">
+                            <div class="text-secondary display-6 font-weight-bold" id="total_users_count">
+                                Eggs
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-md-12 col-lg-6 col-xl-6 pt-4 px-4">
+            <a class="p-3 card" href="/auth/group/">
+                <div class="padding-bigger">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <p class="h1 text-secondary vertical-center">
+                                <i class="fas fa-car-battery"></i>
+                            </p>
+                        </div>
+                        <div class="">
+                            <div class="text-secondary display-6 font-weight-bold" id="total_users_count">
+                                Privileges
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-12 col-lg-6 col-xl-6 pt-4 px-4">
+            <a class="p-3 card" href="/admin/logentry/">
+                <div class="padding-bigger">
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <p class="h1 text-secondary vertical-center">
+                                <i class="fas fa-book"></i>
+                            </p>
+                        </div>
+                        <div class="">
+                            <div class="text-secondary display-6 font-weight-bold" id="total_users_count">
+                                Log Entries
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div id="map" style="width: 100%; height: 800px;" class="card shadow  mt-4 mr-5"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        window.onload = () => {
+            // Map options
+            var mapOptions = {
+                center: [28.2096, 83.9856],
+                zoom: 13
+            }
+
+            // Creating a map object
+            var map = new L.map('map', mapOptions);
+
+            // Creating a Layer object
+            var layer = new L.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+            // Adding layer to the map
+            map.addLayer(layer);
+
+            fetch('{% url "customer_location" %}')
+                .then(
+                    res => res.json()
+                ).then(
+                    data => {
+                        var LeafIcon = L.Icon.extend({
+                            options: {
+                                iconSize: [35, 35],
+                                iconAnchor: [35, 35],
+                            }
+                        });
+                        var userIcon = new LeafIcon({
+                            iconUrl: '{% static "icons/user-marker.png" %}',
+                        })
+
+                        data.forEach(user => {
+                            // Adding markers
+                            let latitude = Number.parseFloat(user.latitude).toPrecision(4);
+                            let longitude = Number.parseFloat(user.longitude).toPrecision(4);
+                            console.log(longitude, latitude)
+                            L.marker([longitude, latitude], {
+                                icon: userIcon
+                            }).addTo(map).bindPopup(`${user.name}`);
+                        })
+                        return data;
+                    }
+                ).catch(
+                    err => {
+                        console.log(err);
+                    }
+                )
+        }
+
+    </script>
+    {% endif %}
+</div>
